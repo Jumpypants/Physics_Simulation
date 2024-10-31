@@ -73,8 +73,8 @@ public class Collision {
         double delta_v_normal = (v_rel_normal - v_rel_normal_post) / totalMass;
 
         // Update velocities (normal components)
-        vA[0] = vA[0] - Math.abs(delta_v_normal * normal[0] * mA);
-        vA[1] = vA[1] - Math.abs(delta_v_normal * normal[1] * mA);
+        vA[0] += -delta_v_normal * normal[0] * mA;
+        vA[1] += -delta_v_normal * normal[1] * mA;
 
         vJ[0] += delta_v_normal * normal[0] * (1 - S) * mJ;
         vJ[1] += delta_v_normal * normal[1] * (1 - S) * mJ;
@@ -89,8 +89,8 @@ public class Collision {
 
         // Move the node very slightly along the collision normal to avoid multiple collisions
         double[] newPosition = new double[] {
-                P[0] + Math.abs(normal[0] * 0.1),
-                P[1] + Math.abs(normal[1] * 0.1)
+                P[0] + normal[0] * 10,
+                P[1] + normal[1] * 10
         };
         NODE.setPosition(newPosition);
     }
