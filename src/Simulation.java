@@ -7,10 +7,12 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class Simulation extends JPanel implements ActionListener, KeyListener {
-    private boolean paused = true;
+    private boolean paused = false;
 
-    private final int FPS = 60;
+    private final int FPS = 30;
     private final double TIME_SCALE = 1.0;
+    private final int width = 900;
+    private final int height = 900;
 
     private final ArrayList<Shape> shapes = new ArrayList<>();
 
@@ -28,8 +30,13 @@ public class Simulation extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         for (Shape shape : shapes) {
+            shape.drawFilled(g);
             shape.draw(g);
         }
+
+        g.setColor(Color.BLACK);
+        g.drawLine(width, 0, width, height);
+        g.drawLine(0, height, width, height);
     }
 
     @Override
@@ -56,8 +63,8 @@ public class Simulation extends JPanel implements ActionListener, KeyListener {
             timeLeft -= nextCollision.getTime();
             nextCollision.collide();
 
-            nextCollision.getNode().setColliding(true);
-            nextCollision.getConnector().setColliding(true);
+//            nextCollision.getNode().setColliding(true);
+//            nextCollision.getConnector().setColliding(true);
         }
     }
 
@@ -104,7 +111,7 @@ public class Simulation extends JPanel implements ActionListener, KeyListener {
     }
 
     private void updateShapes(double timeLeft) {
-        for (Shape shape : shapes) shape.update(timeLeft);
+        for (Shape shape : shapes) shape.update(timeLeft, width, height);
     }
 
     public static void main(String[] args) {
@@ -143,20 +150,25 @@ public class Simulation extends JPanel implements ActionListener, KeyListener {
     private void resetShapes () {
         shapes.clear();
 
-        Shape shape1 = new Shape(new Node[] {
-                new Node(new double[] {650, 100}, new double[] {0, 0}, 1),
-                new Node(new double[] {600, 200}, new double[] {0, 0}, 1),
-                new Node(new double[] {700, 200}, new double[] {0, 1000}, 1),
-        }, 1000);
+        shapes.add(createShape());
+//        shapes.add(createShape());
+//        shapes.add(createShape());
+    }
 
-        Shape shape2 = new Shape(new Node[] {
-                new Node(new double[] {650, 700}, new double[] {0, 0}, 1),
-                new Node(new double[] {750, 700}, new double[] {0, -600}, 1),
-                new Node(new double[] {650, 800}, new double[] {0, 0}, 1),
-        }, 1000);
+    private Shape createShape () {
+        Node[] nodeList = new Node[20];
+        double x = (double) width / 2;
+        double y = (double) height / 2;
 
-        shapes.add(shape1);
-        shapes.add(shape2);
+        for (int i = 0; i < nodeList.length; i++) {
+            nodeList[i] = new Node(new double[] {Math.random() * 10, Math.random() * 10}, new double[] {Math.random() * 500 - 250, Math.random() * 500 - 250}, 1, true);
+        }
+
+        for (Node node : nodeList) {
+            node.setPosition(new double[] {node.getPosition()[0] * 30 + x, node.getPosition()[1] * 30 + y});
+        }
+
+        return new Shape(nodeList, 20);
     }
 
     @Override

@@ -5,16 +5,18 @@ import java.util.Collections;
 public class Shape {
     private final ArrayList<Node> nodes = new ArrayList<>();
     private final ArrayList<Connector> connectors = new ArrayList<>();
+    private final ArrayList<Node> edgeNodes = new ArrayList<>();
 
     public Shape (Node[] nodes, double stiffness) {
         Collections.addAll(this.nodes, nodes);
 
         createConnectors(stiffness);
+        findEdgeNodes();
     }
 
-    public void update (double deltaTime) {
+    public void update (double deltaTime, double width, double height) {
         pullNodes(deltaTime);
-        updateNodes(deltaTime);
+        updateNodes(deltaTime, width, height);
     }
 
     public void draw (Graphics g) {
@@ -25,6 +27,27 @@ public class Shape {
         for (Node node : nodes) {
             node.draw(g);
         }
+    }
+
+    public void drawFilled (Graphics g) {
+        g.setColor(Color.BLUE);
+        g.fillPolygon(getXPoints(), getYPoints(), nodes.size());
+    }
+
+    private int[] getYPoints() {
+        int[] yPoints = new int[nodes.size()];
+        for (int i = 0; i < nodes.size(); i++) {
+            yPoints[i] = (int) nodes.get(i).getPosition()[1];
+        }
+        return yPoints;
+    }
+
+    private int[] getXPoints() {
+        int[] xPoints = new int[nodes.size()];
+        for (int i = 0; i < nodes.size(); i++) {
+            xPoints[i] = (int) nodes.get(i).getPosition()[0];
+        }
+        return xPoints;
     }
 
     public Node[] getNodes() {
@@ -43,11 +66,19 @@ public class Shape {
         }
     }
 
-    private void updateNodes(double deltaTime) {
+    private void findEdgeNodes() {
         for (Node node : nodes) {
-            node.addForce(new double[] {0, 3 * 9.8}, deltaTime);
+            if (node.isEdge()) {
+                edgeNodes.add(node);
+            }
+        }
+    }
 
-            node.update(deltaTime, 0.001);
+    private void updateNodes(double deltaTime, double width, double height) {
+        for (Node node : nodes) {
+            node.addForce(new double[] {0, 30000 * deltaTime}, deltaTime);
+
+            node.update(deltaTime, 0.2, width, height);
         }
     }
 

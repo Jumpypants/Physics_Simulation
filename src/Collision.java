@@ -64,7 +64,7 @@ public class Collision {
 
         // TODO: implement the coefficient of restitution
         //double e = getElasticity();
-        double e = 0.1;
+        double e = 1;
         double v_rel_normal = vA_normal - vP_normal;
         double v_rel_normal_post = -e * v_rel_normal;
 
@@ -89,8 +89,8 @@ public class Collision {
 
         // Move the node very slightly along the collision normal to avoid multiple collisions
         double[] newPosition = new double[] {
-                P[0] + normal[0] * 10,
-                P[1] + normal[1] * 10
+                P[0] + normal[0] * 1,
+                P[1] + normal[1] * 1
         };
         NODE.setPosition(newPosition);
     }
